@@ -2,11 +2,11 @@
 
 all: release
 
-release: opm.odin
-	odin build opm.odin -file -o:speed -lto:thin -out:opm
+release: src/*.odin
+	odin build src -o:speed -lto:thin -out:opm
 
-native: opm.odin
-	odin build opm.odin -file -o:speed -lto:thin -microarch:native -out:opm
+native: src/*.odin
+	odin build src -o:speed -lto:thin -microarch:native -out:opm
 
 clean:
 	rm -f opm
