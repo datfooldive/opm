@@ -8,6 +8,14 @@ Simple Linux AppImage manager written in Odin.
 - [Odin](https://odin-lang.org/) and Make (to build)
 - `bubblewrap` (`bwrap`)
 
+## Install
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/datfooldive/opm/main/install.sh | sh
+```
+
+Installs latest x86_64 Linux release to `~/.local/bin/opm`. Set `OPM_INSTALL_DIR` to use another directory. `bubblewrap` remains required at runtime.
+
 ## Build
 
 ```sh

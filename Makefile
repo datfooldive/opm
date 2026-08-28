@@ -3,7 +3,7 @@
 all: release
 
 release: src/*.odin
-	odin build src -o:speed -lto:thin -out:opm
+	odin build src -o:speed -out:opm
 
 native: src/*.odin
 	odin build src -o:speed -lto:thin -microarch:native -out:opm
