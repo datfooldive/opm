@@ -320,6 +320,14 @@ inspect_appimage :: proc(path, icon_out: string) -> (AppImage_Info, string, bool
 	if stat_err != nil ||
 	   file_info.type != .Regular {return info, "AppImage is not a regular file", false}
 	info.size = file_info.size
+	made_executable := false
+	defer if made_executable {_ = os.chmod(absolute, file_info.mode)}
+	if .Execute_User not_in file_info.mode {
+		if chmod_err := os.chmod(absolute, file_info.mode + {.Execute_User}); chmod_err != nil {
+			return info, fmt.aprintf("cannot make AppImage executable for inspection: %v", chmod_err), false
+		}
+		made_executable = true
+	}
 	elf, valid := inspect_elf(absolute, u64(file_info.size))
 	if !valid {return info, "invalid or unsupported AppImage ELF header", false}
 	info.appimage_type = elf.appimage_type
