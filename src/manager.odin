@@ -188,7 +188,7 @@ install_appimage :: proc(source: string) -> (string, bool) {
 
 	info.path = owned(p.app_path)
 	if staged_icon != "" {
-		if err := os.rename(staged_icon, p.icon_path);
+		if err := move_file(staged_icon, p.icon_path);
 		   err != nil {return fmt.aprintf("cannot write icon: %v", err), false}
 		delete(info.icon)
 		info.icon = owned(p.icon_path)
