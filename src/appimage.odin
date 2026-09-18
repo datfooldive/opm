@@ -133,13 +133,16 @@ run_extract :: proc(appimage, work_dir, prefix: string) -> bool {
 extract_metadata :: proc(appimage, work_dir: string) -> bool {
 	prefixes := []string {
 		"*.desktop",
+		"usr/share/applications/*.desktop",
 		".DirIcon",
 		"*.png",
 		"*.svg",
 		"*.svgz",
 		"usr/share/icons/hicolor",
 		"usr/share/metainfo",
+		"usr/share/metainfo/*.xml",
 		"usr/share/appdata",
+		"usr/share/appdata/*.appdata",
 	}
 	ok := false
 	for prefix in prefixes {if run_extract(appimage, work_dir, prefix) {ok = true}}
@@ -230,10 +233,13 @@ parse_appstream :: proc(path: string, info: ^AppImage_Info) -> bool {
 }
 
 root_desktop :: proc(root: string) -> string {
-	entries, err := os.read_all_directory_by_path(root, context.temp_allocator)
-	if err != nil {return ""}
-	for entry in entries {if entry.type == .Regular &&
-		   strings.has_suffix(entry.name, ".desktop") {return owned(entry.fullpath)}}
+	walker := filepath.walker_create(root)
+	defer filepath.walker_destroy(&walker)
+	for entry in filepath.walker_walk(&walker) {
+		if entry.type == .Regular && strings.has_suffix(entry.name, ".desktop") {
+			return owned(entry.fullpath)
+		}
+	}
 	return ""
 }
 
@@ -350,9 +356,12 @@ inspect_appimage :: proc(path, icon_out: string) -> (AppImage_Info, string, bool
 	icon_id: string
 	if desktop != "" {
 		defer delete(desktop)
-		icon_id, _ = parse_desktop(desktop, &info)
-		info.id = owned(filepath.stem(desktop))
-		info.metadata_quality = "desktop"
+		parsed := false
+		icon_id, parsed = parse_desktop(desktop, &info)
+		if parsed {
+			info.id = owned(filepath.stem(desktop))
+			info.metadata_quality = "desktop"
+		}
 	}
 	appstream := first_appstream(root)
 	if appstream != "" {
@@ -363,6 +372,7 @@ inspect_appimage :: proc(path, icon_out: string) -> (AppImage_Info, string, bool
 		info.name = owned(filepath.stem(absolute))
 		info.metadata_quality = "filename"
 	}
+	if info.id == "" {info.id = owned(info.name)}
 	if info.description == "" && info.summary != "" {info.description = owned(info.summary)}
 
 	icon_path := find_icon(root, icon_id)
