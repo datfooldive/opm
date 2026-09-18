@@ -246,8 +246,20 @@ list_installed :: proc() -> bool {
 	}
 	if len(apps) == 0 {fmt.println("No installed AppImages.");return true}
 	sort.quick_sort_proc(apps[:], compare_installed)
-	fmt.println("ID\tNAME\tVERSION\tARCHITECTURE\tPATH")
-	for app in apps {fmt.printfln("%s\t%s\t%s\t%s\t%s", app.id, app.info.name, app.info.version, app.info.architecture, app.info.path)}
+	id_width := len("ID")
+	name_width := len("NAME")
+	version_width := len("VERSION")
+	architecture_width := len("ARCHITECTURE")
+	for app in apps {
+		id_width = max(id_width, len(app.id))
+		name_width = max(name_width, len(app.info.name))
+		version_width = max(version_width, len(app.info.version))
+		architecture_width = max(architecture_width, len(app.info.architecture))
+	}
+	fmt.printfln("%-*s  %-*s  %-*s  %-*s  %s", id_width, "ID", name_width, "NAME", version_width, "VERSION", architecture_width, "ARCHITECTURE", "PATH")
+	for app in apps {
+		fmt.printfln("%-*s  %-*s  %-*s  %-*s  %s", id_width, app.id, name_width, app.info.name, version_width, app.info.version, architecture_width, app.info.architecture, app.info.path)
+	}
 	return true
 }
 
