@@ -1,0 +1,19 @@
+[package]
+name = "opm"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Simple Linux AppImage manager"
+license = "MIT"
+
+[dependencies]
+backhand = { version = "0.25.1", default-features = false, features = ["gzip", "xz", "zstd", "lz4"] }
+roxmltree = "0.21"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.11"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

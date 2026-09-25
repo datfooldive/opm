@@ -1,12 +1,11 @@
 # OPM
 
-Simple Linux AppImage manager written in Odin.
+Simple Linux AppImage manager written in Rust.
 
 ## Requirements
 
 - Linux
-- [Odin](https://odin-lang.org/) and Make (to build)
-- `bubblewrap` (`bwrap`)
+- [Rust](https://www.rust-lang.org/) 1.88+ (to build)
 
 ## Install
 
@@ -14,18 +13,19 @@ Simple Linux AppImage manager written in Odin.
 curl -fsSL https://raw.githubusercontent.com/datfooldive/opm/main/install.sh | sh
 ```
 
-Installs latest x86_64 Linux release to `~/.local/bin/opm`. Set `OPM_INSTALL_DIR` to use another directory. `bubblewrap` remains required at runtime.
+Installs latest x86_64 Linux release to `~/.local/bin/opm`. Set `OPM_INSTALL_DIR` to use another directory.
 
 ## Build
 
 ```sh
-make
+cargo build --release   # binary at target/release/opm
 ```
 
-For a CPU-specific build:
+Or with Make, which copies the binary to `./opm`:
 
 ```sh
-make native
+make          # release build
+make native   # CPU-specific build
 ```
 
 ## Usage
@@ -46,4 +46,4 @@ Example:
 ./opm uninstall MyApp
 ```
 
-Metadata extraction runs inside a Bubblewrap sandbox; AppImage payload is not launched normally.
+Metadata is read directly from the AppImage's embedded squashfs image, so nothing inside the AppImage is ever executed. Only type 2 AppImages are supported.

@@ -2,11 +2,14 @@
 
 all: release
 
-release: src/*.odin
-	odin build src -o:speed -out:opm
+release:
+	cargo build --release
+	cp target/release/opm opm
 
-native: src/*.odin
-	odin build src -o:speed -lto:thin -microarch:native -out:opm
+native:
+	RUSTFLAGS="-C target-cpu=native" cargo build --release
+	cp target/release/opm opm
 
 clean:
+	cargo clean
 	rm -f opm
